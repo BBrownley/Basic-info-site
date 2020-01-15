@@ -1,31 +1,23 @@
-const http = require("http");
-const url = require("url");
-const fs = require("fs");
+const express = require("express");
+const app = express();
 
-http.createServer((req, res) => {
+const path = require("path");
+const root = "../public";
 
-    const q = url.parse(req.url, true);
-    let fileName;
+app.get("/", (req, res) => {
+    res.sendFile("index.html", { root });
+});
 
-    if (q.pathname === "/") {
-        fileName = `../public/index.html`;
-    } else {
-        fileName = `../public/${q.pathname}.html`;
-    }
+app.get("/about", (req, res) => {
+    res.sendFile("about.html", { root });
+});
 
-    fs.readFile(fileName, (err, data) => {
-        if (err || q.pathName === "/404") {
+app.get("/contact-me", (req, res) => {
+    res.sendFile("contact-me.html", { root });
+});
 
-            data = fs.readFileSync("../public/404.html");
+app.get("*", (req, res) => {
+    res.sendFile("404.html", { root });
+});
 
-            res.writeHead(404, {"Content-type": "text/html"});
-            res.write(data);
-            return res.end();
-        } else {
-            res.writeHead(200, {"Content-type": "text/html"});
-            res.write(data);
-            return res.end();
-        }
-    })
-
-}).listen(8080)
+app.listen(8080);
